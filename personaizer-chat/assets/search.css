@@ -1,0 +1,136 @@
+/**
+ * PERSONAIZER AI Search — frontend styling.
+ *
+ * Deliberately theme-agnostic: this renders inside an arbitrary site theme, not wp-admin, so it does
+ * NOT reuse admin-page.css's dark admin palette — only its spacing/radius rhythm as a loose visual
+ * reference. Exposed as CSS custom properties so a theme-savvy owner can override colors to match
+ * their site without editing the plugin.
+ */
+
+/**
+ * Custom properties live on :root, not .pz-search — a selector-bound search input (an owner's own
+ * theme markup, not our [personaizer_search] shortcode) has its results panel appended straight to
+ * <body> so it can be positioned in JS via getBoundingClientRect() rather than relying on a CSS
+ * `position: absolute` ancestor the theme may not provide. :root is an ancestor of that panel too,
+ * so both paths see the same tokens; a theme can still override any of them from its own CSS.
+ */
+:root {
+    --pz-search-bg: #ffffff;
+    --pz-search-border: #e2e5eb;
+    --pz-search-text: #1a1d23;
+    --pz-search-muted: #6b7280;
+    --pz-search-accent: #2563eb;
+    --pz-search-shadow: 0 8px 24px rgba(16, 20, 30, 0.12);
+}
+
+.pz-search {
+    position: relative;
+    max-width: 480px;
+}
+
+.pz-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 13px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", ui-sans-serif, sans-serif;
+    border: 1px solid var(--pz-search-border);
+    border-radius: 8px;
+    color: var(--pz-search-text);
+    background: var(--pz-search-bg);
+}
+
+.pz-search-input:focus {
+    outline: none;
+    border-color: var(--pz-search-accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.pz-search-results {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: var(--pz-search-bg);
+    border: 1px solid var(--pz-search-border);
+    border-radius: 10px;
+    box-shadow: var(--pz-search-shadow);
+    max-height: 420px;
+    overflow-y: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", ui-sans-serif, sans-serif;
+}
+
+.pz-search-message {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--pz-search-muted);
+}
+
+.pz-search-list {
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+}
+
+.pz-search-item {
+    margin: 0;
+    padding: 0;
+}
+
+.pz-search-item-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.pz-search-item-link:hover,
+.pz-search-item-link.is-highlighted {
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.pz-search-item-image {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #f2f3f5;
+}
+
+.pz-search-item-text {
+    min-width: 0;
+    flex: 1;
+}
+
+.pz-search-item-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--pz-search-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pz-search-item-excerpt {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--pz-search-muted);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.pz-search-item-price {
+    margin-top: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--pz-search-accent);
+}

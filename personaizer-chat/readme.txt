@@ -4,15 +4,15 @@ Tags: ai chatbot, live chat, chat widget, woocommerce, customer support
 Requires at least: 5.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Connect your site to a PERSONAIZER AI persona in one click — a chat widget that answers from your own pages, posts and products.
+Connect your site to a PERSONAIZER AI persona in one click — a chat widget and AI-powered search that answer from your own pages, posts and products.
 
 == Description ==
 
-This plugin puts your PERSONAIZER AI persona on your WordPress site as a floating chat widget, and — if you want it to — teaches that persona your site's own content, so it answers from your real pages, posts and WooCommerce products instead of guessing.
+This plugin puts your PERSONAIZER AI persona on your WordPress site as a floating chat widget and, optionally, an AI-powered search box — and, if you want it to, teaches that persona your site's own content, so both answer from your real pages, posts and WooCommerce products instead of guessing.
 
 You build and train the persona at [personaizer.com](https://personaizer.com); this plugin is the bridge between it and your site. Conversations, knowledge and the widget's appearance all live in your PERSONAIZER account.
 
@@ -41,6 +41,14 @@ When WooCommerce is active, a **Products** lane appears. Products are synced as 
 = Plan-aware syncing =
 
 If your site holds more content than your PERSONAIZER plan's knowledge allowance, the plugin syncs what fits and tells you plainly how much landed, with a link to upgrade. Whatever did not fit is remembered, and syncs **automatically** as soon as the plan has room — you do not have to come back and re-sync by hand.
+
+= AI Search (optional) =
+
+Turn on **Let visitors search with AI** and your persona can power search on your site too — the same knowledge that answers chat also ranks search results, so a visitor typing "warm jacket under $50" gets matching products, not just keyword hits.
+
+* Drop the `[personaizer_search]` shortcode anywhere for a ready-made search box, or point the plugin at your theme's own search field with a CSS selector — either way it's a dropdown of live results layered on top of what's already there. Nothing about your existing search is removed or replaced.
+* Two quality modes: **Smart** (best relevance, 5 credits per search) or **Fast** (lighter matching, 1 credit per search) — pick whichever fits your plan.
+* Off by default, like every other optional feature here.
 
 = Recognise signed-in customers (optional) =
 
@@ -78,6 +86,9 @@ If you enable a sync lane, the plugin sends the title, URL, text and image URLs 
 
 **5. Customer recognition (optional; `https://api.personaizer.com`)**
 If customer recognition is enabled, a signed-in WordPress user's name, email address and phone number are sent to PERSONAIZER, in a token signed with your site's Identity Secret, so the AI can recognise them. Nothing is sent for signed-out visitors. You can switch this off in the plugin's settings.
+
+**6. AI Search (optional; `https://api.personaizer.com`)**
+If AI Search is enabled, the text a visitor types into the search box (whether the plugin's own `[personaizer_search]` shortcode or your theme's search field, if you've pointed the plugin at it) is sent to PERSONAIZER as they type, and PERSONAIZER returns matching results from your synced content. This runs only when AI Search is switched on, using the same public Persona ID as the chat widget — no separate credential.
 
 Your use of PERSONAIZER is governed by:
 
@@ -125,6 +136,9 @@ In WordPress it stores only options: your Persona ID, your secret API key, your 
 Use **Disconnect** to clear every credential and setting the plugin stored, while keeping the plugin installed. Deleting the plugin removes the same data. Neither touches your persona or its knowledge on PERSONAIZER.
 
 == Changelog ==
+
+= 1.1.0 =
+* AI Search: an optional AI-powered search box, either the `[personaizer_search]` shortcode or bound to your theme's own search field via a CSS selector. Two quality modes (Smart / Fast) trading relevance against credit cost. Off by default.
 
 = 1.0.0 =
 * One-click Connect: approve your site on the PERSONAIZER consent screen and the plugin provisions its own credentials — no IDs to copy.

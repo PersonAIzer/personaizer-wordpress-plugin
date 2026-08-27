@@ -3,7 +3,7 @@
  * Plugin Name: PERSONAIZER Chat & Search
  * Plugin URI:  https://personaizer.com/wordpress
  * Description: Add the PERSONAIZER AI chat widget to your WordPress site in one click. Enter your Persona ID and go live — no coding required.
- * Version:     1.0.0
+ * Version:     1.1.0
  * Requires at least: 5.6
  * Requires PHP: 7.4
  * Author:      PERSONAIZER
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * the header would be wasted work. build-zip.sh refuses to package when the constant, the header and
  * readme.txt's Stable tag disagree, so the copy cannot drift in silence.
  */
-define( 'PERSONAIZER_VERSION', '1.0.0' );
+define( 'PERSONAIZER_VERSION', '1.1.0' );
 define( 'PERSONAIZER_PLUGIN_FILE', __FILE__ );
 
 /**
@@ -1153,6 +1153,22 @@ add_action( 'admin_init', function () {
         'sanitize_callback' => function ( $value ) { return $value === '1' ? '1' : ''; },
         'default'           => '',
     ] );
+    // AI Search: on/off, the fast(1 credit)/smart(5 credits) mode, and an optional CSS selector for
+    // binding to the theme's OWN search input instead of (or alongside) the [personaizer_search]
+    // shortcode. The selector is free-form text — it goes to the browser only via wp_json_encode()
+    // inside an inline <script>, never string-concatenated, so it can't break out regardless of content.
+    register_setting( 'personaizer_chat', 'personaizer_search_enabled', [
+        'sanitize_callback' => function ( $value ) { return $value === '1' ? '1' : ''; },
+        'default'           => '',
+    ] );
+    register_setting( 'personaizer_chat', 'personaizer_search_mode', [
+        'sanitize_callback' => function ( $value ) { return $value === 'fast' ? 'fast' : 'smart'; },
+        'default'           => 'smart',
+    ] );
+    register_setting( 'personaizer_chat', 'personaizer_search_selector', [
+        'sanitize_callback' => function ( $value ) { return substr( sanitize_text_field( (string) $value ), 0, 300 ); },
+        'default'           => '',
+    ] );
 } );
 
 // ── Top-level sidebar menu ────────────────────────────────────────────────────
@@ -1205,6 +1221,9 @@ function personaizer_chat_page() {
     $id              = get_option( 'personaizer_persona_id', '' );
     $secret          = get_option( 'personaizer_secret_key', '' );
     $identify_users  = get_option( 'personaizer_identify_users', '' ) === '1';
+    $search_enabled  = get_option( 'personaizer_search_enabled', '' ) === '1';
+    $search_mode     = get_option( 'personaizer_search_mode', 'smart' );
+    $search_selector = get_option( 'personaizer_search_selector', '' );
     $active          = ! empty( $id );
 
     // Name/avatar of the connected persona (cached 5 min). Null when the API is unreachable — the
@@ -1637,6 +1656,54 @@ function personaizer_chat_page() {
                         </div>
                     </div>
 
+                    <?php
+                    // AI Search: its own card, not folded into the knowledge card above — turning it on
+                    // reveals two more choices (mode, selector) rather than the single toggle recognition
+                    // gets, so it earns a heading of its own.
+                    ?>
+                    <p class="pz-section-label">AI Search</p>
+                    <div class="pz-card">
+                        <div class="pz-card-body">
+                            <div class="pz-lane pz-lane-search<?php echo $search_enabled ? '' : ' pz-lane-off'; ?>">
+                                <div class="pz-lane-head">
+                                    <label class="pz-switch" for="pz_search_enabled">
+                                        <input type="hidden" name="personaizer_search_enabled" value="" />
+                                        <input type="checkbox" id="pz_search_enabled" name="personaizer_search_enabled"
+                                               value="1" <?php checked( $search_enabled ); ?> />
+                                        <span class="pz-switch-track"><span class="pz-switch-knob"></span></span>
+                                    </label>
+                                    <label class="pz-lane-name" for="pz_search_enabled">Let visitors search with AI</label>
+                                </div>
+
+                                <div class="pz-lane-sub">
+                                    <p class="pz-hint" style="margin-top:0;">
+                                        Drop <code>[personaizer_search]</code> anywhere for a ready-made search box,
+                                        or point it at your theme's own search field below.
+                                    </p>
+
+                                    <div class="pz-field">
+                                        <label class="pz-label" for="pz_search_mode">Result quality</label>
+                                        <select id="pz_search_mode" name="personaizer_search_mode" class="pz-input">
+                                            <option value="smart" <?php selected( $search_mode, 'smart' ); ?>>Smart — best relevance (5 credits per search)</option>
+                                            <option value="fast" <?php selected( $search_mode, 'fast' ); ?>>Fast — lighter matching (1 credit per search)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="pz-field">
+                                        <label class="pz-label" for="pz_search_selector">Bind to your own search box (optional)</label>
+                                        <input type="text" id="pz_search_selector" name="personaizer_search_selector"
+                                               class="pz-input pz-input-mono" placeholder=".search-field"
+                                               value="<?php echo esc_attr( $search_selector ); ?>" />
+                                        <p class="pz-hint">
+                                            A CSS selector for your theme's search input (e.g. <code>.search-field</code> or
+                                            <code>#s</code>). Leave blank to just use the shortcode above.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <?php // One line, not a card: it's a signpost, and a card would imply something to do here. ?>
                     <p class="pz-signpost">
                         Colors, greeting and FAQ live on the persona, with a live preview —
@@ -2046,6 +2113,66 @@ add_action( 'wp_footer', function () {
 // tag directly rather than depend on core version for a load-order property that matters either way.
 add_filter( 'script_loader_tag', function ( $tag, $handle ) {
     if ( $handle === 'personaizer-chat-widget' && strpos( $tag, ' async' ) === false ) {
+        $tag = str_replace( ' src=', ' async src=', $tag );
+    }
+    return $tag;
+}, 10, 2 );
+
+// ── AI Search ──────────────────────────────────────────────────────────────────
+
+/**
+ * [personaizer_search] — a self-contained search box. Its input/results markup is what
+ * assets/search.js looks for by class name; the script itself is only enqueued (below) when
+ * search is switched on, so this shortcode renders inert markup otherwise.
+ */
+add_shortcode( 'personaizer_search', function () {
+    ob_start();
+    ?>
+    <div class="pz-search" data-pz-search>
+        <input type="search" class="pz-search-input" placeholder="Search…" aria-label="Search">
+        <div class="pz-search-results" hidden></div>
+    </div>
+    <?php
+    return ob_get_clean();
+} );
+
+/**
+ * Loads assets/search.{css,js} sitewide, same shape as the chat widget's own wp_footer injection
+ * above — search.js calls PERSONAIZER's /v1/search directly from the browser using the public
+ * Persona ID (same embed-auth model as chat.js, no WordPress round-trip per query). Only loads when
+ * the owner has actually turned AI Search on; the [personaizer_search] shortcode is harmless without
+ * it (an inert search box), so there's no need to detect shortcode presence before enqueuing.
+ */
+add_action( 'wp_footer', function () {
+    $id = get_option( 'personaizer_persona_id', '' );
+    if ( empty( $id ) || get_option( 'personaizer_search_enabled', '' ) !== '1' ) return;
+
+    wp_enqueue_style(
+        'personaizer-search',
+        plugins_url( 'assets/search.css', PERSONAIZER_PLUGIN_FILE ),
+        [],
+        PERSONAIZER_VERSION
+    );
+
+    wp_register_script(
+        'personaizer-search',
+        plugins_url( 'assets/search.js', PERSONAIZER_PLUGIN_FILE ),
+        [],
+        PERSONAIZER_VERSION,
+        [ 'strategy' => 'async', 'in_footer' => true ]
+    );
+    $cfg = [
+        'apiBase'  => rtrim( PERSONAIZER_WIDGET_API_BASE, '/' ),
+        'personaId' => $id,
+        'mode'     => get_option( 'personaizer_search_mode', 'smart' ),
+        'selector' => get_option( 'personaizer_search_selector', '' ),
+    ];
+    wp_add_inline_script( 'personaizer-search', 'window.PersonaizerSearchConfig = ' . wp_json_encode( $cfg ) . ';', 'before' );
+    wp_enqueue_script( 'personaizer-search' );
+} );
+
+add_filter( 'script_loader_tag', function ( $tag, $handle ) {
+    if ( $handle === 'personaizer-search' && strpos( $tag, ' async' ) === false ) {
         $tag = str_replace( ' src=', ' async src=', $tag );
     }
     return $tag;

@@ -171,6 +171,11 @@ body.toplevel_page_personaizer-chat #screen-meta-links { display:none; }
    class is flipped LIVE by the inline script when the on/off switch changes, so this reacts before Save. */
 .pz-lane-off .pz-lane-update, .pz-lane-off .pz-lane-note-live { display:none; }
 .pz-lane:not(.pz-lane-off) .pz-lane-note-off { display:none; }
+/* The AI Search lane's whole sub-area (mode + selector) only makes sense once search is on — unlike
+   the sync lanes above, there's no "why switch on?" note to keep showing while off, so the entire
+   .pz-lane-sub hides. Scoped to .pz-lane-search specifically so it doesn't change the sync lanes'
+   existing off-state behavior. */
+.pz-lane-search.pz-lane-off .pz-lane-sub { display:none; }
 
 /* Switch — "does my AI use these?". A real checkbox underneath, so it works without JS and reads to a
    screen reader as the checkbox it is. */
