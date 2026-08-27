@@ -1,0 +1,4 @@
+# Built plugin zips + manifest are artifacts — build them fresh with build-zip.sh, never commit them
+# (a committed zip goes stale and you end up testing the wrong version). Everything else here IS tracked.
+*.zip
+personaizer-chat.json

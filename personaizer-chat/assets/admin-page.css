@@ -1,0 +1,368 @@
+/* ── Page shell ── */
+body.toplevel_page_personaizer-chat #wpcontent,
+body.toplevel_page_personaizer-chat #wpbody,
+body.toplevel_page_personaizer-chat #wpbody-content { background:#060a16!important; padding:0!important; }
+body.toplevel_page_personaizer-chat #wpbody-content .wrap { margin:0!important; }
+body.toplevel_page_personaizer-chat #screen-meta,
+body.toplevel_page_personaizer-chat #screen-meta-links { display:none; }
+
+/* ── Scrollbar ── */
+.pz-page ::-webkit-scrollbar { width:6px; }
+.pz-page ::-webkit-scrollbar-track { background:#0c1224; }
+.pz-page ::-webkit-scrollbar-thumb { background:#1e2743; border-radius:3px; }
+.pz-page ::-webkit-scrollbar-thumb:hover { background:#6c7aa3; }
+
+/* ── Root ── */
+.pz-page {
+    min-height: 100vh;
+    background: #060a16;
+    color: #f0f4ff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", ui-sans-serif, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 0 0 60px;
+}
+
+/* ── Top header bar ── */
+.pz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 56px;
+    background: #0c1224;
+    border-bottom: 1px solid #1e2743;
+    position: sticky;
+    top: 32px;
+    z-index: 100;
+}
+.pz-header-left { display:flex; align-items:center; gap:12px; }
+.pz-logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
+.pz-logo-icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #fff;
+    flex-shrink: 0;
+}
+.pz-logo-name {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #f0f4ff;
+}
+.pz-header-divider { width:1px; height:18px; background:#1e2743; }
+.pz-header-subtitle { font-size:12px; color:#6c7aa3; letter-spacing:0.04em; }
+.pz-header-right { display:flex; align-items:center; gap:8px; }
+.pz-status-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
+}
+.pz-status-pill.active { background:rgba(45,189,78,.1); border:1px solid rgba(45,189,78,.25); color:#2dbd4e; }
+.pz-status-pill.inactive { background:rgba(108,122,163,.08); border:1px solid #1e2743; color:#6c7aa3; }
+.pz-status-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.pz-status-pill.active .pz-status-dot { background:#2dbd4e; animation:pz-pulse 2s infinite; }
+.pz-status-pill.inactive .pz-status-dot { background:#6c7aa3; }
+@keyframes pz-pulse { 0%,100%{opacity:1}50%{opacity:.35} }
+.pz-ext-link {
+    display: flex; align-items: center; gap: 4px;
+    padding: 5px 11px;
+    border: 1px solid #1e2743; border-radius: 7px;
+    font-size: 12px; color: #6c7aa3; text-decoration: none;
+    transition: border-color .15s, color .15s;
+}
+.pz-ext-link:hover { border-color:#2a3556; color:#f0f4ff; }
+.pz-ext-link svg { opacity:.6; }
+
+/* ── Content ── */
+.pz-content { max-width: 680px; margin: 0 auto; padding: 32px 24px; }
+
+/* ── Section label ── */
+.pz-section-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #6c7aa3;
+    margin: 0 0 10px; padding-left: 2px;
+}
+
+/* ── Card ── */
+.pz-card {
+    background: #0c1224;
+    border: 1px solid #1e2743;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+.pz-card-head { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid #1e2743; }
+.pz-card-head-icon {
+    width: 34px; height: 34px;
+    background: rgba(59,130,246,.1);
+    border: 1px solid rgba(59,130,246,.2);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.pz-card-head-text h3 { margin:0; font-size:14px; font-weight:600; color:#f0f4ff; }
+.pz-card-head-text p { margin:3px 0 0; font-size:12px; color:#6c7aa3; }
+.pz-card-body { padding: 20px; }
+
+/* ── Hero (the connected persona) ── */
+.pz-hero { display:flex; align-items:center; gap:16px; padding:22px 20px; }
+.pz-hero-avatar {
+    width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 600; color: #fff;
+    object-fit: cover; overflow: hidden;
+}
+.pz-hero-text { flex:1; min-width:0; }
+.pz-hero-text h2 { margin:0; font-size:18px; font-weight:600; color:#f0f4ff; }
+.pz-hero-text p { margin:3px 0 0; font-size:12.5px; color:#6c7aa3; }
+.pz-hero-actions { display:flex; gap:8px; flex-shrink:0; align-self:flex-start; }
+.pz-hero-note { margin-top:8px!important; font-size:11.5px!important; color:#6c7aa3; opacity:.8; }
+/* The avatar is clickable — say so on hover, quietly. */
+.pz-hero-avatar-link { position:relative; display:block; flex-shrink:0; line-height:0; border-radius:14px; }
+.pz-hero-avatar-link::after {
+    content: "⤢";
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(6,10,22,.62);
+    color: #f0f4ff; font-size: 15px;
+    border-radius: 14px;
+    opacity: 0; transition: opacity .15s;
+}
+.pz-hero-avatar-link:hover::after { opacity: 1; }
+/* While the portrait is still being generated the avatar is provisional — say so quietly
+   rather than presenting a placeholder as the finished thing. */
+.pz-hero-avatar-wip { opacity:.55; animation: pz-breathe 1.8s ease-in-out infinite; }
+@keyframes pz-breathe { 0%,100%{opacity:.45} 50%{opacity:.75} }
+
+/* ── Progress bar: real stages from the server, never a fake crawl ── */
+.pz-bar {
+    margin-top:10px; height:4px; border-radius:4px;
+    background:#1e2743; overflow:hidden; max-width:340px;
+}
+.pz-bar > span {
+    display:block; height:100%; border-radius:4px;
+    background:linear-gradient(90deg,#1e40af,#7dd3fc);
+    transition:width .6s ease;
+}
+.pz-live-dot {
+    display:inline-block; width:6px; height:6px; border-radius:50%;
+    background:#2dbd4e; margin-right:6px; vertical-align:middle;
+    animation:pz-pulse 2s infinite;
+}
+
+/* ── Lane rows ── */
+.pz-lane {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(30,39,67,.6);
+}
+.pz-lane:last-of-type { border-bottom:0; }
+.pz-lane-head { display:flex; align-items:center; gap:12px; }
+.pz-lane-name { flex:1; font-size:13px; color:#f0f4ff; cursor:pointer; }
+/* The sub-option lines up under the label, not the switch — it belongs to the lane, not to the switch. */
+.pz-lane-sub { margin:6px 0 0 52px; display:flex; flex-direction:column; gap:3px; }
+.pz-lane-update { display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#9fb0d9; cursor:pointer; }
+.pz-lane-update input { margin:0; }
+.pz-lane-note { font-size:11.5px; color:#6c7aa3; line-height:1.5; }
+/* Off: the lane dims but the row keeps its height, so a switch never makes the list jump. */
+.pz-lane-off .pz-lane-name, .pz-lane-off .pz-know-count { opacity:.55; }
+/* Off: hide the sub-toggle + its "why switch on?" note, show the "AI ignores these" note. The .pz-lane-off
+   class is flipped LIVE by the inline script when the on/off switch changes, so this reacts before Save. */
+.pz-lane-off .pz-lane-update, .pz-lane-off .pz-lane-note-live { display:none; }
+.pz-lane:not(.pz-lane-off) .pz-lane-note-off { display:none; }
+
+/* Switch — "does my AI use these?". A real checkbox underneath, so it works without JS and reads to a
+   screen reader as the checkbox it is. */
+.pz-switch { position:relative; display:inline-flex; flex-shrink:0; cursor:pointer; }
+.pz-switch input { position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; }
+.pz-switch-track {
+    width: 40px; height: 22px; border-radius: 999px;
+    background: #1e2743; border: 1px solid #2a3555;
+    transition: background .16s ease, border-color .16s ease;
+    display: inline-flex; align-items: center; padding: 2px;
+}
+.pz-switch-knob {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #6c7aa3; transition: transform .16s ease, background .16s ease;
+}
+.pz-switch input:checked + .pz-switch-track { background: rgba(45,189,78,.22); border-color: rgba(45,189,78,.5); }
+.pz-switch input:checked + .pz-switch-track .pz-switch-knob { transform: translateX(18px); background: #2dbd4e; }
+.pz-switch input:focus-visible + .pz-switch-track { outline: 2px solid #7dd3fc; outline-offset: 2px; }
+/* Sub-option toggle — the SAME switch, one size down, so "keep up to date" reads as a choice sitting
+   UNDER the lane's on/off switch (consistent shape, clear hierarchy). Shown only when the lane is on. */
+.pz-switch-sm { transform: scale(.8); transform-origin: left center; }
+
+.pz-know {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid rgba(30,39,67,.6);
+    cursor: pointer;
+}
+.pz-know:last-of-type { border-bottom:0; }
+.pz-know input { margin:0; flex-shrink:0; }
+.pz-know-name { flex:1; font-size:13px; color:#f0f4ff; }
+.pz-know-count {
+    font-size: 12px; color: #6c7aa3;
+    font-variant-numeric: tabular-nums;
+    background: rgba(108,122,163,.1);
+    border: 1px solid #1e2743;
+    border-radius: 20px; padding: 1px 9px;
+}
+.pz-sync-state {
+    display: flex; align-items: center; gap: 7px;
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid #1e2743;
+    font-size: 12px; color: #6c7aa3;
+}
+/* A second concern inside the same card — divided, not re-housed in a card of its own. */
+.pz-card-split { margin-top:16px; padding-top:16px; border-top:1px solid #1e2743; }
+/* A signpost, not a setting: no card, because a card promises something to do. */
+.pz-signpost { font-size:12px; color:#6c7aa3; margin:14px 2px 0; line-height:1.6; }
+.pz-signpost a { color:#7dd3fc; text-decoration:none; }
+.pz-signpost a:hover { text-decoration:underline; }
+.pz-spin { animation: pz-rotate 1.1s linear infinite; transform-origin: 50% 50%; }
+@keyframes pz-rotate { to { transform: rotate(360deg); } }
+
+/* ── Field / label / hint ── */
+.pz-field { margin-bottom: 20px; }
+.pz-field:last-child { margin-bottom: 0; }
+.pz-label {
+    display: block; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #6c7aa3; margin-bottom: 7px;
+}
+.pz-hint { font-size: 12px; color: #6c7aa3; margin-top: 7px; line-height: 1.55; }
+.pz-hint a { color: #7dd3fc; text-decoration: none; }
+.pz-hint a:hover { text-decoration: underline; }
+
+/* ── Text input ── */
+.pz-input {
+    width: 100%; padding: 9px 13px;
+    background: #060a16; border: 1px solid #1e2743; border-radius: 8px;
+    color: #f0f4ff; font-size: 13px; font-family: inherit;
+    box-sizing: border-box; outline: none;
+    transition: border-color .15s, box-shadow .15s;
+}
+.pz-input:focus { border-color: #1e40af; box-shadow: 0 0 0 3px rgba(30,64,175,.2); }
+.pz-input::placeholder { color: #6c7aa3; }
+.pz-input-mono { font-family: ui-monospace, "Cascadia Code", monospace; font-size: 12.5px; letter-spacing:.02em; }
+
+/* ── Toggle ── */
+.pz-toggle-row { display:flex; align-items:flex-start; gap:14px; cursor:pointer; }
+.pz-toggle { position:relative; width:38px; height:21px; flex-shrink:0; margin-top:1px; }
+.pz-toggle input { opacity:0; width:0; height:0; position:absolute; }
+.pz-toggle-track {
+    position:absolute; inset:0; background:#1e2743; border-radius:21px;
+    transition:background .2s; border:1px solid #2a3556;
+}
+.pz-toggle-knob {
+    position:absolute; width:15px; height:15px; background:#6c7aa3;
+    border-radius:50%; top:3px; left:3px;
+    transition:transform .2s, background .2s;
+    box-shadow:0 1px 3px rgba(0,0,0,.4);
+}
+.pz-toggle input:checked ~ .pz-toggle-track { background:#1e40af; border-color:#1e40af; }
+.pz-toggle input:checked ~ .pz-toggle-knob { transform:translateX(17px); background:#f0f4ff; }
+.pz-toggle-copy strong { display:block; font-size:13px; font-weight:600; color:#f0f4ff; margin-bottom:2px; }
+.pz-toggle-copy span { font-size:12px; color:#6c7aa3; }
+
+/* ── Buttons ── */
+.pz-save-row { display:flex; align-items:center; justify-content:space-between; margin-top:20px; }
+.pz-save-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 28px;
+    background: #1e40af; color: #f0f4ff!important;
+    border: 2px solid #1e40af; border-radius: 8px;
+    font-size: 13px; font-weight: 600; font-family: inherit;
+    cursor: pointer; text-decoration: none!important;
+    height: auto!important; line-height: 1!important;
+    transition: background .15s, box-shadow .15s, transform .1s;
+}
+.pz-save-btn:hover { background: transparent; box-shadow: 0 0 20px rgba(0,92,180,.5); }
+.pz-save-btn:active { transform: scale(0.98); }
+.pz-btn-quiet { background:#0c1224!important; border-color:#1e2743!important; color:#f0f4ff!important; }
+.pz-btn-quiet:hover { border-color:#2a3556!important; box-shadow:none!important; }
+.pz-footer-links { font-size:12px; color:#6c7aa3; }
+.pz-footer-links a { color:#7dd3fc; text-decoration:none; margin-left:12px; }
+.pz-footer-links a:hover { text-decoration:underline; }
+
+/* ── Footer tools: rare, named, and last ── */
+.pz-tools {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-top: 28px; padding-top: 16px;
+    border-top: 1px solid #1e2743;
+}
+.pz-tool-sep { color:#2a3556; font-size:11px; }
+/* A link, not a button: these are escape hatches, and a button would advertise them. */
+.pz-tool-link {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    font-family: inherit; font-size: 12px; color: #6c7aa3;
+    text-decoration: none; transition: color .15s;
+}
+.pz-tool-link:hover { color:#f0f4ff; text-decoration:underline; }
+.pz-tool-danger:hover { color:#e65a5a; }
+
+.pz-sysinfo { margin-top: 14px; }
+.pz-sysinfo > summary {
+    cursor: pointer; list-style: none;
+    font-size: 12px; color: #6c7aa3;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 2px;
+}
+.pz-sysinfo > summary::-webkit-details-marker { display:none; }
+.pz-sysinfo > summary:hover { color:#f0f4ff; }
+.pz-sysinfo > summary::before { content: "▸"; font-size: 10px; }
+.pz-sysinfo[open] > summary::before { content: "▾"; }
+/* Force the dark theme onto the readonly diagnostic textarea — WP admin's own textarea styles win
+   over .pz-input otherwise and render it white-on-white (unreadable). */
+.pz-sysinfo textarea { background:#060a16!important; color:#c7d2ea!important; border:1px solid #1e2743!important; }
+.pz-sysinfo textarea:focus { border-color:#1e40af!important; box-shadow:0 0 0 3px rgba(30,64,175,.2)!important; }
+
+/* ── Alert (inline notice) ── */
+.pz-notice {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 16px; border-radius: 8px;
+    font-size: 12.5px; line-height: 1.55;
+    color: #6c7aa3; background: rgba(108,122,163,.07);
+    backdrop-filter: blur(10px); border: 1px solid #1e2743;
+    margin-bottom: 20px;
+}
+.pz-notice.info { border-color: rgba(0,172,234,.3); }
+.pz-notice.good { border-color: rgba(45,189,78,.35); }
+.pz-notice.bad { border-color: rgba(230,90,90,.4); }
+.pz-notice svg { flex-shrink:0; margin-top:1px; }
+
+/* ── Plan-limit card ── a ceiling, not an error: amber, not red. One place that names the cause,
+   shows exactly what's missing per lane, and offers the one action (upgrade). */
+.pz-quota {
+    margin: 14px 0 0;
+    border: 1px solid rgba(232,179,57,.35);
+    background: rgba(232,179,57,.06);
+    border-radius: 10px;
+    padding: 16px 18px;
+}
+.pz-quota-head { display:flex; align-items:flex-start; gap:11px; }
+.pz-quota-head > svg { flex-shrink:0; margin-top:2px; }
+.pz-quota-head-text { flex:1; min-width:0; }
+.pz-quota-head-text strong { display:block; font-size:13.5px; color:#f0f4ff; }
+.pz-quota-head-text span { display:block; margin-top:3px; font-size:12px; color:#9fb0d9; line-height:1.55; }
+.pz-plan-tag {
+    flex-shrink:0; font-size:10.5px; font-weight:600; letter-spacing:.04em;
+    color:#e8b339; background:rgba(232,179,57,.12); border:1px solid rgba(232,179,57,.3);
+    border-radius:20px; padding:2px 9px; text-transform:uppercase;
+}
+/* One overall progress bar — the per-lane numbers already live in the row badges above, so the
+   card visualises the aggregate the headline states rather than repeating each lane. */
+.pz-quota-meter { margin:13px 0 2px; }
+.pz-quota-bar { display:block; height:6px; border-radius:5px; background:#1e2743; overflow:hidden; }
+.pz-quota-bar > span { display:block; height:100%; border-radius:5px; background:#2dbd4e; }
+.pz-quota-bar.gap > span { background:linear-gradient(90deg,#2dbd4e,#e8b339); }
+.pz-quota-actions { margin-top:14px; }
+/* Partial-sync state line (amber) — the sync-state row when the AI is behind the site. */
+.pz-sync-state.partial { color:#e8b339; }
+/* A button that reads as an inline link (the Resync action inside the partial line). */
+.pz-linkbtn { background:none; border:0; padding:0; margin:0; font:inherit; color:#7dd3fc; cursor:pointer; }
+.pz-linkbtn:hover { text-decoration:underline; }
+/* The doc-count badge, amber when the AI holds fewer than the site has (a live gap). */
+.pz-know-count.pz-know-gap { color:#e8b339; background:rgba(232,179,57,.1); border-color:rgba(232,179,57,.3); }
