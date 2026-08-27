@@ -1,10 +1,10 @@
 /* ── Page shell ── */
-body.toplevel_page_personaizer-chat #wpcontent,
-body.toplevel_page_personaizer-chat #wpbody,
-body.toplevel_page_personaizer-chat #wpbody-content { background:#060a16!important; padding:0!important; }
-body.toplevel_page_personaizer-chat #wpbody-content .wrap { margin:0!important; }
-body.toplevel_page_personaizer-chat #screen-meta,
-body.toplevel_page_personaizer-chat #screen-meta-links { display:none; }
+body.toplevel_page_personaizer #wpcontent,
+body.toplevel_page_personaizer #wpbody,
+body.toplevel_page_personaizer #wpbody-content { background:#060a16!important; padding:0!important; }
+body.toplevel_page_personaizer #wpbody-content .wrap { margin:0!important; }
+body.toplevel_page_personaizer #screen-meta,
+body.toplevel_page_personaizer #screen-meta-links { display:none; }
 
 /* ── Scrollbar ── */
 .pz-page ::-webkit-scrollbar { width:6px; }

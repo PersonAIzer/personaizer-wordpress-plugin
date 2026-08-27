@@ -31,18 +31,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Where this plugin looks for its own updates: a static manifest beside the release zips, on the same
  * public build container that serves chat.js. Defaults to PRODUCTION; override from wp-config.php to
  * follow a dev release line:
- *   define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://personaizerdevstore2.blob.core.windows.net/platform-builds-public/wordpress/personaizer-chat.json' );
+ *   define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://personaizerdevstore2.blob.core.windows.net/platform-builds-public/wordpress/personaizer.json' );
  * Defined in THIS file (not the main plugin) so the WordPress.org build — which omits this file — ships no
  * update-mechanism code at all. Any manifest's packages must live on the manifest's own host (see
  * trusted_package below); that same-origin rule is the security boundary for self-hosted updates.
  */
 if ( ! defined( 'PERSONAIZER_UPDATE_MANIFEST_URL' ) ) {
-    define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://personaizerprodstore.blob.core.windows.net/platform-builds-public/wordpress/personaizer-chat.json' );
+    define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://personaizerprodstore.blob.core.windows.net/platform-builds-public/wordpress/personaizer.json' );
 }
 
 class Personaizer_Updater {
 
-    const SLUG = 'personaizer-chat';
+    const SLUG = 'personaizer';
 
     /** Cache key for the fetched manifest. A SITE transient: update data is network-wide on multisite. */
     const CACHE_KEY = 'personaizer_update_manifest';
@@ -59,7 +59,7 @@ class Personaizer_Updater {
         add_filter( 'plugins_api', [ __CLASS__, 'details' ], 20, 3 );
     }
 
-    /** `personaizer-chat/personaizer-chat.php` — the key WordPress files every plugin under. */
+    /** `personaizer/personaizer.php` — the key WordPress files every plugin under. */
     private static function basename() {
         return plugin_basename( PERSONAIZER_PLUGIN_FILE );
     }

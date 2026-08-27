@@ -31,4 +31,4 @@ define( 'PERSONAIZER_APP_URL', 'https://dev.personaizer.com' );
 define( 'PERSONAIZER_WIDGET_URL', 'https://personaizerdevstore2.blob.core.windows.net/platform-builds-public/chat.js' );
 
 // Optional — also exercise the self-hosted update channel against the dev manifest.
-define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://personaizerdevstore2.blob.core.windows.net/platform-builds-public/wordpress/personaizer-chat.json' );
+define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://personaizerdevstore2.blob.core.windows.net/platform-builds-public/wordpress/personaizer.json' );

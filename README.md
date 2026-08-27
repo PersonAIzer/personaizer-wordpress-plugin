@@ -33,7 +33,7 @@ those settings.
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** — how the plugin is put together: the file map, the two backend
   auth modes, and how content sync/backfill/reconciliation fit together.
 - **[RELEASING.md](RELEASING.md)** — the WordPress.org submission process and how to ship a new version.
-- The plugin's own `readme.txt` (inside `personaizer-chat/`, bundled in every release zip) is the
+- The plugin's own `readme.txt` (inside `personaizer/`, bundled in every release zip) is the
   WordPress.org-facing feature list, FAQ, and changelog.
 - **[testing/](testing/)** — a turnkey kit for validating the plugin against a real public WordPress site
   (LocalWP can't exercise image sync, Connect's PKCE callback, WP-Cron, or CORS — see
@@ -42,8 +42,8 @@ those settings.
 ## Repo layout
 
 ```
-personaizer-chat/     the plugin itself — this folder's contents are exactly what ships in the zip
-build-zip.sh           packages personaizer-chat/ into an installable zip (prod / --dev / --org builds)
+personaizer/     the plugin itself — this folder's contents are exactly what ships in the zip
+build-zip.sh           packages personaizer/ into an installable zip (prod / --dev / --org builds)
 publish.sh              publishes a built zip + update manifest to the self-hosted update channel
 testing/                 kit for testing against a real public site + the WooCommerce sample catalog
 ```

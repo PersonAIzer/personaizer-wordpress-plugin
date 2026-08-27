@@ -10,7 +10,7 @@
  * Author URI:  https://personaizer.com
  * License:     GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: personaizer-chat
+ * Text Domain: personaizer
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -800,7 +800,7 @@ add_action( 'admin_post_personaizer_flush_opcache', function () {
     // observe its own success. The reload lands on fresh code if it worked — and if the banner is still
     // there afterwards, the host blocked it and the answer is a real cache clear or a PHP restart.
     personaizer_flush_own_opcache();
-    wp_safe_redirect( add_query_arg( [ 'page' => 'personaizer-chat' ], admin_url( 'admin.php' ) ) );
+    wp_safe_redirect( add_query_arg( [ 'page' => 'personaizer' ], admin_url( 'admin.php' ) ) );
     exit;
 } );
 
@@ -832,7 +832,7 @@ add_action( 'admin_post_personaizer_compare', function () {
         ), 30 * MINUTE_IN_SECONDS );
         delete_transient( 'personaizer_compare_error' );
     }
-    wp_safe_redirect( add_query_arg( [ 'page' => 'personaizer-chat' ], admin_url( 'admin.php' ) ) );
+    wp_safe_redirect( add_query_arg( [ 'page' => 'personaizer' ], admin_url( 'admin.php' ) ) );
     exit;
 } );
 
@@ -861,7 +861,7 @@ add_action( 'admin_post_personaizer_fix_diff', function () {
             ), 30 * MINUTE_IN_SECONDS );
         }
     }
-    wp_safe_redirect( add_query_arg( [ 'page' => 'personaizer-chat' ], admin_url( 'admin.php' ) ) );
+    wp_safe_redirect( add_query_arg( [ 'page' => 'personaizer' ], admin_url( 'admin.php' ) ) );
     exit;
 } );
 
@@ -872,7 +872,7 @@ add_action( 'admin_post_personaizer_resync', function () {
     // No "you clicked it" flag in the URL: the sync line on the page reads the real progress and says
     // either "Syncing… 4 of 28" or "Synced 1 second ago". Both are an honest answer to the click, and
     // a flag would only let the page claim work was happening after it had already finished.
-    wp_safe_redirect( add_query_arg( [ 'page' => 'personaizer-chat' ], admin_url( 'admin.php' ) ) );
+    wp_safe_redirect( add_query_arg( [ 'page' => 'personaizer' ], admin_url( 'admin.php' ) ) );
     exit;
 } );
 
@@ -886,7 +886,7 @@ add_action( 'admin_post_personaizer_disconnect', function () {
     check_admin_referer( 'personaizer_disconnect' );
     Personaizer_Data::clear();
     wp_safe_redirect( add_query_arg(
-        [ 'page' => 'personaizer-chat', 'pz_disconnected' => '1' ],
+        [ 'page' => 'personaizer', 'pz_disconnected' => '1' ],
         admin_url( 'admin.php' )
     ) );
     exit;
@@ -896,8 +896,8 @@ add_action( 'admin_post_personaizer_disconnect', function () {
 // (and where anyone hunting for a reset looks first).
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $links ) {
     $mine = [
-        '<a href="' . esc_url( admin_url( 'admin.php?page=personaizer-chat' ) ) . '">Settings</a>',
-        '<a href="' . esc_url( admin_url( 'admin.php?page=personaizer-chat&pz_view=system#pz-sysinfo' ) ) . '">System Info</a>',
+        '<a href="' . esc_url( admin_url( 'admin.php?page=personaizer' ) ) . '">Settings</a>',
+        '<a href="' . esc_url( admin_url( 'admin.php?page=personaizer&pz_view=system#pz-sysinfo' ) ) . '">System Info</a>',
     ];
     if ( get_option( 'personaizer_persona_id', '' ) !== '' ) {
         $mine[] = '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=personaizer_disconnect' ), 'personaizer_disconnect' ) ) . '"'
@@ -1129,7 +1129,7 @@ add_action( 'admin_post_personaizer_connect_callback', function () {
     }
 
     wp_safe_redirect( add_query_arg(
-        array( 'page' => 'personaizer-chat', $ok ? 'pz_connected' : 'pz_connect_error' => '1' ),
+        array( 'page' => 'personaizer', $ok ? 'pz_connected' : 'pz_connect_error' => '1' ),
         admin_url( 'admin.php' )
     ) );
     exit;
@@ -1191,15 +1191,15 @@ add_action( 'admin_init', function () {
 
 add_action( 'admin_menu', function () {
     $svg = 'data:image/svg+xml;base64,' . base64_encode( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path fill="#a7aaad" d="M12 2C6.477 2 2 6.253 2 11.5c0 2.394.924 4.582 2.443 6.244L2.5 21.5l4.16-1.38A10.06 10.06 0 0 0 12 21c5.523 0 10-4.253 10-9.5S17.523 2 12 2Z"/><circle cx="8" cy="11.5" r="1.2" fill="#060a16"/><circle cx="12" cy="11.5" r="1.2" fill="#060a16"/><circle cx="16" cy="11.5" r="1.2" fill="#060a16"/></svg>' );
-    add_menu_page( 'PERSONAIZER Chat & Search', 'PERSONAIZER', 'manage_options', 'personaizer-chat', 'personaizer_chat_page', $svg, 30 );
+    add_menu_page( 'PERSONAIZER Chat & Search', 'PERSONAIZER', 'manage_options', 'personaizer', 'personaizer_chat_page', $svg, 30 );
 } );
 
 // The settings page's CSS/JS, registered/enqueued (not raw <style>/<script> echoes in the page callback)
 // so WordPress's own dependency, caching and cache-busting rules apply. Scoped to just this page via the
-// admin_enqueue_scripts hook suffix — 'toplevel_page_personaizer-chat' matches the slug passed to
+// admin_enqueue_scripts hook suffix — 'toplevel_page_personaizer' matches the slug passed to
 // add_menu_page() above.
 add_action( 'admin_enqueue_scripts', function ( $hook_suffix ) {
-    if ( $hook_suffix !== 'toplevel_page_personaizer-chat' ) return;
+    if ( $hook_suffix !== 'toplevel_page_personaizer' ) return;
 
     wp_enqueue_style(
         'personaizer-admin-page',

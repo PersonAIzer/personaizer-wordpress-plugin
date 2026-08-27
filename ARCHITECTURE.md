@@ -5,7 +5,7 @@ How this plugin is put together, for anyone picking it up cold.
 ## File map
 
 ```
-personaizer-chat.php                          bootstrap, admin menu + settings page, widget injection
+personaizer.php                          bootstrap, admin menu + settings page, widget injection
 includes/
   class-personaizer-api.php                    HTTP client for the PERSONAIZER API (secret-key calls)
   class-personaizer-site-profile.php           describes this WordPress site to PERSONAIZER (no scraping needed)
@@ -77,11 +77,11 @@ A given zip ships with exactly one of these active, decided at build time by `bu
 
 ## Admin settings page
 
-`personaizer_chat_page()` in `personaizer-chat.php` is deliberately *not* a WordPress Settings API page —
+`personaizer_chat_page()` in `personaizer.php` is deliberately *not* a WordPress Settings API page —
 nothing the owner configures there is stored as a WordPress "setting" in the traditional sense beyond a
 handful of on/off toggles (which lanes sync, whether to recognize signed-in customers). Everything else —
 widget appearance, greeting, FAQ, the persona itself — lives on personaizer.com and is fetched for
 display, not edited here. The page's CSS/JS live in `assets/admin-page.{css,js}` and are registered via
-`admin_enqueue_scripts` scoped to just this page (`toplevel_page_personaizer-chat`); the one piece of
+`admin_enqueue_scripts` scoped to just this page (`toplevel_page_personaizer`); the one piece of
 per-request dynamic behavior (whether to auto-reload while a sync is still running) is passed to the
 static JS via `wp_add_inline_script` with a small JSON config object, not by echoing a `<script>` tag.

@@ -18,7 +18,7 @@ both — first submission, then every release after.
   errors on submission.
 - **Listing assets** (not shipped in the zip — pushed into SVN's `assets/` after approval):
   `icon-256x256.png`, `banner-1544x500.png` (+ optionally `banner-772x250.png`), and any
-  `screenshot-N.png` you want on the listing page (list each in `personaizer-chat/readme.txt`'s
+  `screenshot-N.png` you want on the listing page (list each in `personaizer/readme.txt`'s
   `== Screenshots ==` section, in order).
 
 ### 2. Build and submit
@@ -27,7 +27,7 @@ both — first submission, then every release after.
 ./build-zip.sh --org
 ```
 
-This produces `dist/personaizer-chat-<version>-org.zip` — the submission package, identical to a prod
+This produces `dist/personaizer-<version>-org.zip` — the submission package, identical to a prod
 build minus the self-hosted updater (wordpress.org serves updates itself; shipping your own update channel
 alongside it is a hard rejection).
 
@@ -72,14 +72,14 @@ then tag the release.
 
 ```bash
 # 1. Check out the (initially empty) SVN repo — slug confirmed in the approval email
-svn co https://plugins.svn.wordpress.org/personaizer-chat personaizer-chat-svn
-cd personaizer-chat-svn
+svn co https://plugins.svn.wordpress.org/personaizer personaizer-svn
+cd personaizer-svn
 
 # 2. Fill trunk/ with the plugin files (the CONTENTS of the --org build, unzipped — never the zip
 #    itself, never the updater)
 ../build-zip.sh --org
-unzip -o ../dist/personaizer-chat-<version>-org.zip -d /tmp/pz-org
-cp -r /tmp/pz-org/personaizer-chat/* trunk/
+unzip -o ../dist/personaizer-<version>-org.zip -d /tmp/pz-org
+cp -r /tmp/pz-org/personaizer/* trunk/
 
 # 3. Put the listing images into assets/ — these are NOT shipped to users
 cp icon-256x256.png banner-1544x500.png screenshot-1.png assets/
@@ -93,7 +93,7 @@ svn cp trunk tags/<version>
 svn ci -m "Tag <version>"
 ```
 
-Confirm the plugin appears at `https://wordpress.org/plugins/personaizer-chat/` and installs from a test
+Confirm the plugin appears at `https://wordpress.org/plugins/personaizer/` and installs from a test
 site's Plugins → Add New search.
 
 > SVN is a release system, not git. Only commit finished, tested files — never `.git*`, zips,
@@ -102,8 +102,8 @@ site's Plugins → Add New search.
 ## Every future release
 
 1. **Bump the version in three places** (guarded by `build-zip.sh` — it refuses to build if these
-   disagree): the `personaizer-chat.php` header `Version:`, the `PERSONAIZER_VERSION` `define()`, and
-   `personaizer-chat/readme.txt`'s `Stable tag:`.
+   disagree): the `personaizer.php` header `Version:`, the `PERSONAIZER_VERSION` `define()`, and
+   `personaizer/readme.txt`'s `Stable tag:`.
 2. Add a `== Changelog ==` entry in `readme.txt`.
 3. **WordPress.org**: copy the new files into `trunk/`, then:
    ```bash

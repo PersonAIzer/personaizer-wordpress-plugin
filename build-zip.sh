@@ -35,8 +35,8 @@ for arg in "$@"; do
 done
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SRC_DIR="$HERE/personaizer-chat"
-SLUG="personaizer-chat"
+SRC_DIR="$HERE/personaizer"
+SLUG="personaizer"
 OUT_DIR="${OUT_DIR:-$HERE/dist}"
 
 [ -d "$SRC_DIR" ] || { echo "error: $SRC_DIR not found" >&2; exit 1; }
@@ -82,7 +82,7 @@ echo "✓ source defaults point at production"
 
 # ── Stage ─────────────────────────────────────────────────────────────────────
 # WordPress installs whatever top-level directory the zip contains, so the tree must be
-# rooted at "personaizer-chat/" — not at the files themselves.
+# rooted at "personaizer/" — not at the files themselves.
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 mkdir -p "$STAGE/$SLUG"
@@ -160,7 +160,7 @@ import sys, zipfile
 with zipfile.ZipFile(sys.argv[1]) as z:
     names = z.namelist()
     roots = {n.split("/")[0] for n in names}
-    assert roots == {"personaizer-chat"}, f"zip root must be the plugin folder, got {roots}"
+    assert roots == {"personaizer"}, f"zip root must be the plugin folder, got {roots}"
     for n in sorted(names):
         print("   ", n)
 PY
@@ -240,7 +240,7 @@ sections = dict(re.findall(r"^==\s*(.+?)\s*==[ \t]*\n(.*?)(?=^==\s|\Z)", readme,
 
 manifest = {
     "name": header_field("Plugin Name", "PersonAIzer Chat & Search"),
-    "slug": "personaizer-chat",
+    "slug": "personaizer",
     "version": version,
     "requires": readme_field("Requires at least"),
     "requires_php": readme_field("Requires PHP"),

@@ -43,13 +43,13 @@ version guards exist to prevent.
 
    **A. Dev-baked zip (simplest — no override file, skip step 5):**
    ```bash
-   ./build-zip.sh --dev     # → dist/personaizer-chat-<ver>-dev.zip
+   ./build-zip.sh --dev     # → dist/personaizer-<ver>-dev.zip
    ```
    Plugins → Add New → **Upload Plugin** → the `-dev.zip` → Activate. It already points at dev. Done.
 
    **B. Prod zip + override (closer to what a real owner installs):**
    ```bash
-   ./build-zip.sh           # → dist/personaizer-chat-<ver>.zip (+ manifest)
+   ./build-zip.sh           # → dist/personaizer-<ver>.zip (+ manifest)
    ```
    Upload that zip, then do step 5.
 

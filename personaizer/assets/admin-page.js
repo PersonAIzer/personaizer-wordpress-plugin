@@ -2,7 +2,7 @@
  * PERSONAIZER admin settings page.
  *
  * Registered/enqueued via admin_enqueue_scripts (not a raw <script> echo) so it plays by WordPress's
- * own dependency and caching rules — see the personaizer_chat_page() docblock in personaizer-chat.php.
+ * own dependency and caching rules — see the personaizer_chat_page() docblock in personaizer.php.
  *
  * window.PersonaizerAdminPage is optional and set inline by PHP only when the page needs to poll:
  * { autoReload: true } while the persona is still building / content is still syncing.

@@ -97,7 +97,7 @@ Your use of PERSONAIZER is governed by:
 
 == Installation ==
 
-1. Download the plugin zip (`personaizer-chat-<version>.zip`).
+1. Download the plugin zip (`personaizer-<version>.zip`).
 2. In your WordPress admin, go to **Plugins → Add New → Upload Plugin**, choose the zip, click **Install Now**, then **Activate**.
 3. Open the **PERSONAIZER** menu in your admin sidebar and click **Connect**.
 4. Approve your site on the PERSONAIZER consent screen, pick the persona to use, and tick what it may learn from.
