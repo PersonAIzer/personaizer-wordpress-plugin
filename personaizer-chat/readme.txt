@@ -4,7 +4,7 @@ Tags: ai chatbot, live chat, chat widget, woocommerce, customer support
 Requires at least: 5.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -136,6 +136,9 @@ In WordPress it stores only options: your Persona ID, your secret API key, your 
 Use **Disconnect** to clear every credential and setting the plugin stored, while keeping the plugin installed. Deleting the plugin removes the same data. Neither touches your persona or its knowledge on PERSONAIZER.
 
 == Changelog ==
+
+= 1.1.1 =
+* Fix: page-builder post types (Elementor, ElementsKit and similar) no longer show up as sync lanes — only genuine content types do. A collided lane label (two custom types both named "Templates") now shows its type slug so they're distinguishable.
 
 = 1.1.0 =
 * AI Search: an optional AI-powered search box, either the `[personaizer_search]` shortcode or bound to your theme's own search field via a CSS selector. Two quality modes (Smart / Fast) trading relevance against credit cost. Off by default.

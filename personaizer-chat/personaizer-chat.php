@@ -3,7 +3,7 @@
  * Plugin Name: PERSONAIZER Chat & Search
  * Plugin URI:  https://personaizer.com/wordpress
  * Description: Add the PERSONAIZER AI chat widget to your WordPress site in one click. Enter your Persona ID and go live — no coding required.
- * Version:     1.1.0
+ * Version:     1.1.1
  * Requires at least: 5.6
  * Requires PHP: 7.4
  * Author:      PERSONAIZER
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * the header would be wasted work. build-zip.sh refuses to package when the constant, the header and
  * readme.txt's Stable tag disagree, so the copy cannot drift in silence.
  */
-define( 'PERSONAIZER_VERSION', '1.1.0' );
+define( 'PERSONAIZER_VERSION', '1.1.1' );
 define( 'PERSONAIZER_PLUGIN_FILE', __FILE__ );
 
 /**
@@ -161,9 +161,25 @@ function personaizer_lanes() {
     // A custom type is just another lane — same source shape, same controls. Nothing about this is special
     // cased, which is the point: a site with a Recipes type gets Recipes beside Pages, and the ~95% without
     // one never learn the concept exists.
-    foreach ( personaizer_extra_post_types() as $type ) {
+    $extra = personaizer_extra_post_types();
+
+    // Labels are a plugin's free choice, so two of them can land on the same word — "Templates" is the
+    // common one. Two identically named rows leave an owner unable to tell which they are switching off,
+    // so qualify a label with its type slug, but only when it actually collides: the ordinary
+    // one-custom-type site keeps a clean "Recipes".
+    $labels = array( 'Pages', 'Posts' );
+    if ( class_exists( 'WooCommerce' ) ) {
+        $labels[] = 'Products';
+    }
+    foreach ( $extra as $type ) {
+        $labels[] = $type->labels->name;
+    }
+    $seen = array_count_values( $labels );
+
+    foreach ( $extra as $type ) {
+        $label = $type->labels->name;
         $lanes[ $type->name ] = array(
-            'label'     => $type->labels->name,
+            'label'     => $seen[ $label ] > 1 ? $label . ' (' . $type->name . ')' : $label,
             'source'    => $host . '-' . sanitize_key( $type->name ),
             'post_type' => $type->name,
         );
@@ -1978,14 +1994,42 @@ function personaizer_system_info() {
     return implode( "\n", $lines );
 }
 
-/** Public post types other than the ones with a first-class row (and never attachments/products). */
+/**
+ * Public post types other than the ones with a first-class row (and never attachments/products).
+ *
+ * `public => true` alone is not the line between a site's content and a plugin's furniture. Page builders
+ * register their template stores as public because a preview has to render at a front-end URL — Elementor's
+ * saved layouts, ElementsKit parts, Royal templates, header/footer builders. Offer those as lanes and an
+ * Elementor site shows a wall of rows whose contents are shortcodes and layout markup, not answers.
+ *
+ * Two flags say it for us, and a builder type trips at least one:
+ *
+ *   - `exclude_from_search` — WordPress's own way of saying a visitor should never land on one. This is the
+ *     test SEO plugins use for the same question, and it catches the template libraries.
+ *   - `show_in_nav_menus` — whether the type is somewhere a visitor navigates TO. Both default to following
+ *     `public`, so a real content type inherits the right answer without its author thinking about it;
+ *     turning either off is a deliberate statement that the type is machinery. Elementor's floating buttons
+ *     set only this one (they leave `exclude_from_search` at its inherited false), which is why one flag was
+ *     not enough.
+ *
+ * A site with a genuine type we still get wrong can say so with the filter — nothing here is a guess the
+ * owner is stuck with.
+ */
 function personaizer_extra_post_types() {
     $extra = [];
     foreach ( get_post_types( [ 'public' => true ], 'objects' ) as $type ) {
         if ( in_array( $type->name, [ 'attachment', 'product', 'page', 'post' ], true ) ) continue;
+        if ( ! empty( $type->exclude_from_search ) ) continue;
+        if ( empty( $type->show_in_nav_menus ) ) continue;
         $extra[] = $type;
     }
-    return $extra;
+    /**
+     * Filters the custom post types offered as sync lanes.
+     *
+     * @param WP_Post_Type[] $extra Post type objects, minus pages/posts/products and anything the flags
+     *                              above marked as builder machinery.
+     */
+    return apply_filters( 'personaizer_syncable_post_types', $extra );
 }
 
 // ── Logged-in customer identity (Part B) ──────────────────────────────────────
