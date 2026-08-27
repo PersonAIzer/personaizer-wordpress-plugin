@@ -212,7 +212,7 @@ class Personaizer_Updater {
         }
 
         return [
-            'name'         => isset( $raw['name'] ) ? sanitize_text_field( (string) $raw['name'] ) : 'PERSONAIZER Chat & Search',
+            'name'         => isset( $raw['name'] ) ? sanitize_text_field( (string) $raw['name'] ) : 'PERSONAIZER',
             'version'      => sanitize_text_field( $version ),
             'download_url' => esc_url_raw( $download ),
             'homepage'     => isset( $raw['homepage'] ) ? esc_url_raw( (string) $raw['homepage'] ) : PERSONAIZER_APP_URL,

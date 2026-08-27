@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: PERSONAIZER Chat & Search
+ * Plugin Name: PERSONAIZER
  * Plugin URI:  https://personaizer.com/wordpress
  * Description: Add the PERSONAIZER AI chat widget to your WordPress site in one click. Enter your Persona ID and go live — no coding required.
- * Version:     1.1.1
+ * Version:     1.1.2
  * Requires at least: 5.6
  * Requires PHP: 7.4
  * Author:      PERSONAIZER
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * the header would be wasted work. build-zip.sh refuses to package when the constant, the header and
  * readme.txt's Stable tag disagree, so the copy cannot drift in silence.
  */
-define( 'PERSONAIZER_VERSION', '1.1.1' );
+define( 'PERSONAIZER_VERSION', '1.1.2' );
 define( 'PERSONAIZER_PLUGIN_FILE', __FILE__ );
 
 /**
@@ -1191,7 +1191,7 @@ add_action( 'admin_init', function () {
 
 add_action( 'admin_menu', function () {
     $svg = 'data:image/svg+xml;base64,' . base64_encode( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path fill="#a7aaad" d="M12 2C6.477 2 2 6.253 2 11.5c0 2.394.924 4.582 2.443 6.244L2.5 21.5l4.16-1.38A10.06 10.06 0 0 0 12 21c5.523 0 10-4.253 10-9.5S17.523 2 12 2Z"/><circle cx="8" cy="11.5" r="1.2" fill="#060a16"/><circle cx="12" cy="11.5" r="1.2" fill="#060a16"/><circle cx="16" cy="11.5" r="1.2" fill="#060a16"/></svg>' );
-    add_menu_page( 'PERSONAIZER Chat & Search', 'PERSONAIZER', 'manage_options', 'personaizer', 'personaizer_chat_page', $svg, 30 );
+    add_menu_page( 'PERSONAIZER', 'PERSONAIZER', 'manage_options', 'personaizer', 'personaizer_chat_page', $svg, 30 );
 } );
 
 // The settings page's CSS/JS, registered/enqueued (not raw <style>/<script> echoes in the page callback)
@@ -1984,7 +1984,7 @@ function personaizer_system_info() {
     // WordPress / PHP / WooCommerce versions live in Tools → Site Health → Info, so they aren't repeated
     // here; the connection + WP-Cron lines are the ones nothing else in WP can tell you.
     $lines = [
-        'PERSONAIZER Chat & Search ' . ( $header['Version'] ?: '?' ),
+        'PERSONAIZER ' . ( $header['Version'] ?: '?' ),
         '',
         'Connected  : ' . ( $id !== '' ? $id . ( $profile ? '  (' . $profile['name'] . ')' : '' ) : 'not connected' ),
         'API base   : ' . PERSONAIZER_API_URL,

@@ -239,7 +239,7 @@ def to_html(text):
 sections = dict(re.findall(r"^==\s*(.+?)\s*==[ \t]*\n(.*?)(?=^==\s|\Z)", readme, re.M | re.S))
 
 manifest = {
-    "name": header_field("Plugin Name", "PersonAIzer Chat & Search"),
+    "name": header_field("Plugin Name", "PERSONAIZER"),
     "slug": "personaizer",
     "version": version,
     "requires": readme_field("Requires at least"),

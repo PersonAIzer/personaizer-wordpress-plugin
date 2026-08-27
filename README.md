@@ -1,8 +1,9 @@
-# PERSONAIZER Chat & Search — WordPress Plugin
+# PERSONAIZER — WordPress Plugin
 
 Connect a WordPress / WooCommerce site to a [PERSONAIZER](https://personaizer.com) AI persona in one
-click: a floating chat widget that answers visitors from the site's own pages, posts and WooCommerce
-products, and can keep that content synced to the persona so answers stay current.
+click: a floating chat widget and AI-powered search that answer visitors from the site's own pages,
+posts and WooCommerce products, and can keep that content synced to the persona so answers stay
+current.
 
 PERSONAIZER is an external SaaS. This plugin is a client for it — chat runs against the PERSONAIZER API
 and the widget script is served from PERSONAIZER's CDN. A free plan exists, and connecting creates a
