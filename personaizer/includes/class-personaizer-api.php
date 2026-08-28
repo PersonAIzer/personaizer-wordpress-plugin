@@ -215,7 +215,7 @@ class Personaizer_Api {
      * Bulk upsert TYPED product docs (1–100) via PUT /v1/knowledge/docs.
      * Idempotent by each item's `id`; identical content replays as a no-op.
      *
-     * @param array[] $items Typed items ({id,title,source,category,price,…}).
+     * @param array[] $items Typed items ({id,title,source,categories,price,…}).
      * @return array{deferred:string[]}|WP_Error On success an array whose `deferred` holds the external
      *         ids the plan had no room for (empty = everything landed). WP_Error on failure — a 402 means
      *         nothing fit at all.

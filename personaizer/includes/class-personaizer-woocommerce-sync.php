@@ -164,13 +164,16 @@ class Personaizer_WooCommerce_Sync {
 
     /** Map a WooCommerce product to a typed knowledge item. */
     private function map_product( WC_Product $product ) {
-        $id  = $product->get_id();
-        $cat = $this->categories( $product );
+        $id    = $product->get_id();
+        $paths = $this->category_paths( $product );
 
         $attributes = $this->attributes( $product );
-        // Specific/leaf categories ride along as a filterable attribute; the schema
-        // itself is keyed on the coherent TOP-LEVEL category (fewer, richer schemas).
-        if ( ! empty( $cat['names'] ) ) $attributes['category'] = $cat['names'];
+        // Every category name the product touches also rides along as a filterable attribute, so the
+        // AI can narrow WITHIN a category domain ("dibond, inside sheet materials") without needing a
+        // separate domain per leaf. The paths above decide which domains it belongs to; this decides
+        // what it can be filtered by once it's there.
+        $names = $this->category_names( $paths );
+        if ( ! empty( $names ) ) $attributes['category'] = $names;
 
         $item = array(
             'id'          => $this->external_id( $id ),
@@ -180,7 +183,7 @@ class Personaizer_WooCommerce_Sync {
             // Its own source (so products switch off independently) but the SAME brand as the site's pages
             // and posts — one shop, one logo.
             'brand'       => personaizer_source_key(),
-            'category'    => $cat['top'],
+            'categories'  => $paths,
             'currency'    => get_woocommerce_currency(),
             'attributes'  => $attributes,
             'images'      => $this->images( $product ),
@@ -212,49 +215,80 @@ class Personaizer_WooCommerce_Sync {
     }
 
     /**
-     * Resolve the product's schema category + its full filterable category set.
+     * Every category path the product is filed under, each a root→leaf chain of names.
      *
-     * Schema category = the TOP-LEVEL ancestor of the product's primary category, so
-     * schemas stay few and coherent (one "Clothing" schema learns size/color across
-     * shirts + hoodies) rather than one-per-leaf. The specific leaf categories (and
-     * their ancestors) come back as `names` for a filterable `category` attribute.
+     *     [ ["Outlet"], ["Sheet materials", "Dibond"] ]
      *
-     * @return array{top:string,names:string[]}
+     * WooCommerce gives a product an unordered SET of product_cat terms and nothing in core says
+     * which one is definitive — so we stop guessing and send all of them. Picking a "primary" was
+     * always lossy: a product genuinely in two branches (an LED driver that is both lighting AND a
+     * power supply) lost one branch, and with it that branch's filters. The platform decides which
+     * nodes become searchable groups; the plugin's job is to report the truth.
+     *
+     * Only MAXIMAL paths are sent. If a merchant ticked both "Sheet materials" and its child
+     * "Dibond", the parent adds nothing the child doesn't already imply, so it is dropped — the
+     * ancestor is literally a prefix of the path we send.
+     *
+     * A product with no categories falls back to one "Products" path, so it is still reachable.
+     *
+     * @return array<int,string[]>
      */
-    private function categories( WC_Product $product ) {
+    private function category_paths( WC_Product $product ) {
         $terms = get_the_terms( $product->get_id(), 'product_cat' );
         if ( ! is_array( $terms ) || empty( $terms ) ) {
-            return array( 'top' => 'products', 'names' => array() );
+            return array( array( 'products' ) );
         }
 
-        $primary   = $this->primary_term( $product, $terms );
-        $ancestors = get_ancestors( $primary->term_id, 'product_cat' );
-        $root      = empty( $ancestors ) ? $primary : get_term( (int) end( $ancestors ), 'product_cat' );
-        $top       = ( $root && ! is_wp_error( $root ) ) ? $root->name : $primary->name;
-
-        // Every assigned category name + its ancestors → hierarchical filtering.
-        $names = array();
+        // Build each assigned term's full chain, root first. get_ancestors() returns them
+        // nearest-first, so reverse it.
+        $paths     = array();
+        $by_key    = array();
+        $term_ids  = array();
         foreach ( $terms as $t ) {
-            $names[ $t->name ] = true;
-            foreach ( get_ancestors( $t->term_id, 'product_cat' ) as $aid ) {
+            $chain = array();
+            foreach ( array_reverse( get_ancestors( $t->term_id, 'product_cat' ) ) as $aid ) {
                 $anc = get_term( (int) $aid, 'product_cat' );
-                if ( $anc && ! is_wp_error( $anc ) ) $names[ $anc->name ] = true;
+                if ( $anc && ! is_wp_error( $anc ) ) $chain[] = sanitize_text_field( $anc->name );
             }
-        }
-        return array( 'top' => sanitize_text_field( $top ), 'names' => array_keys( $names ) );
-    }
+            $chain[] = sanitize_text_field( $t->name );
 
-    /** Primary category term — honors a Yoast/RankMath primary if set, else the first assigned. */
-    private function primary_term( WC_Product $product, array $terms ) {
-        foreach ( array( '_yoast_wpseo_primary_product_cat', 'rank_math_primary_product_cat' ) as $meta_key ) {
-            $pid = (int) get_post_meta( $product->get_id(), $meta_key, true );
-            if ( $pid ) {
-                foreach ( $terms as $t ) {
-                    if ( (int) $t->term_id === $pid ) return $t;
+            $key = implode( "\x1f", $chain );
+            if ( isset( $by_key[ $key ] ) ) continue;
+            $by_key[ $key ] = true;
+            $paths[]        = $chain;
+            $term_ids[]     = (int) $t->term_id;
+        }
+
+        // Drop any path that another ticked term descends from — a ticked ancestor is redundant.
+        $maximal = array();
+        foreach ( $paths as $i => $chain ) {
+            $covered = false;
+            foreach ( $term_ids as $j => $other_id ) {
+                if ( $i === $j ) continue;
+                if ( in_array( $term_ids[ $i ], get_ancestors( $other_id, 'product_cat' ), true ) ) {
+                    $covered = true;
+                    break;
                 }
             }
+            if ( ! $covered ) $maximal[] = $chain;
         }
-        return $terms[0];
+
+        return empty( $maximal ) ? $paths : $maximal;
+    }
+
+    /**
+     * The distinct node names across the product's paths — the filterable `category` attribute.
+     * Deduped, so a shared ancestor is listed once.
+     *
+     * @param array<int,string[]> $paths
+     * @return string[]
+     */
+    private function category_names( array $paths ) {
+        $names = array();
+        foreach ( $paths as $chain ) {
+            foreach ( $chain as $name ) $names[ $name ] = true;
+        }
+        return array_keys( $names );
     }
 
     /** Flat descriptive fields: sku (identifier) + the product's fixed, non-variation attributes. */

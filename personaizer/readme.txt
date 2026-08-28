@@ -4,7 +4,7 @@ Tags: ai chatbot, live chat, chat widget, woocommerce, customer support
 Requires at least: 5.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -136,6 +136,12 @@ In WordPress it stores only options: your Persona ID, your secret API key, your 
 Use **Disconnect** to clear every credential and setting the plugin stored, while keeping the plugin installed. Deleting the plugin removes the same data. Neither touches your persona or its knowledge on PERSONAIZER.
 
 == Changelog ==
+
+= 1.2.0 =
+* Products now sync with every category they belong to, not just one. WooCommerce lets a product sit in several categories and doesn't say which is "the" one, so the plugin used to guess — and a product in two branches (say an LED driver that is both lighting and a power supply) lost one of them, along with that branch's filters. All of its categories are now sent as full paths, and PERSONAIZER decides how to group them.
+* Sub-categories are preserved as paths ("Sheet materials > Dibond") instead of being flattened to a single name, so two different branches that happen to share a sub-category name no longer collide.
+* Stores with many categories no longer fail to sync. Previously a catalog with more categories than the account's limit was rejected outright, syncing nothing; now everything syncs and the deepest categories simply group under their parent.
+* Your next sync re-sends every product, so the new categories take effect without any action from you.
 
 = 1.1.2 =
 * Display name simplified to "PERSONAIZER" (was "PERSONAIZER Chat & Search") — no functional change.
