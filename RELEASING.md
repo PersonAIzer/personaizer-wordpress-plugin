@@ -1,7 +1,7 @@
 # Releasing
 
 Two separate things ship from this repo: **self-hosted release zips** (this repo's own GitHub Releases,
-via `publish.sh`) and **the WordPress.org directory listing** (via SVN, once approved). This doc covers
+via `release.sh`) and **the WordPress.org directory listing** (via SVN, once approved). This doc covers
 both — first submission, then every release after.
 
 ## First-time WordPress.org submission
@@ -114,14 +114,18 @@ site's Plugins → Add New search.
    ```
    WordPress.org auto-delivers the new tag to every install — the self-hosted updater is never involved
    for directory installs.
-4. **Self-hosted channel** (this repo's own Releases, for anyone who installed from a downloaded zip
-   instead of the directory):
+4. **GitHub Releases** (the download page clients are sent to, and the update channel for anyone who
+   installed from a downloaded zip instead of the directory):
    ```bash
-   ./publish.sh dev    # test first
-   ./publish.sh prod   # then production — every site running the plugin gets offered this version
+   ./release.sh        # builds the zip + manifest and publishes both as assets of one release
    ```
-   `publish.sh` uploads the zip *then* the update manifest, in that order, deliberately — publishing the
-   manifest first would offer every self-hosted install a download that doesn't exist yet.
+   Both assets matter. The zip is what a site installs; `personaizer.json` is what the updater polls,
+   through the `/releases/latest/download/personaizer.json` permalink. Publish the zip alone and every
+   installed site keeps being offered the *previous* version — silently, because the old release still
+   answers that permalink. `release.sh` attaches both, refuses to re-cut an existing tag, and takes the
+   release notes from this version's `readme.txt` changelog entry.
+
+   There is no separate hosted build to keep in step: releasing IS publishing.
 
 ## Why this plugin passes review
 

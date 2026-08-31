@@ -28,16 +28,24 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Where this plugin looks for its own updates: a static manifest beside the release zips, on the same
- * public build container that serves chat.js. Defaults to PRODUCTION; override from wp-config.php to
- * follow a dev release line:
- *   define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://personaizerdevstore2.blob.core.windows.net/platform-builds-public/wordpress/personaizer.json' );
+ * Where this plugin looks for its own updates: a static manifest published as an asset of this repo's
+ * GitHub release, beside the zip it advertises. `/releases/latest/download/<asset>` is a permalink that
+ * always resolves to the newest release, so the URL below never changes across versions.
+ *
+ * Releases are the ONLY distribution channel — there is no separate hosted build to keep in step with the
+ * download page, and cutting a release is the whole publishing step. (Before 1.2.3 this pointed at our own
+ * blob container, which meant a release was only real once someone remembered to run a second upload
+ * script; a version published on GitHub and never uploaded was invisible to every installed site.)
+ *
+ * Override from wp-config.php to follow a different line (a pre-release fork, a private mirror):
+ *   define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://example.com/personaizer.json' );
  * Defined in THIS file (not the main plugin) so the WordPress.org build — which omits this file — ships no
  * update-mechanism code at all. Any manifest's packages must live on the manifest's own host (see
- * trusted_package below); that same-origin rule is the security boundary for self-hosted updates.
+ * trusted_package below); that same-origin rule is the security boundary for self-hosted updates, and it
+ * holds here because the manifest and the zip are assets of the same release on github.com.
  */
 if ( ! defined( 'PERSONAIZER_UPDATE_MANIFEST_URL' ) ) {
-    define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://personaizerprodstore.blob.core.windows.net/platform-builds-public/wordpress/personaizer.json' );
+    define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://github.com/PersonAIzer/personaizer-wordpress-plugin/releases/latest/download/personaizer.json' );
 }
 
 class Personaizer_Updater {

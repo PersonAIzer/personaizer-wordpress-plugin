@@ -4,7 +4,7 @@ Tags: ai chatbot, live chat, chat widget, woocommerce, customer support
 Requires at least: 5.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -136,6 +136,10 @@ In WordPress it stores only options: your Persona ID, your secret API key, your 
 Use **Disconnect** to clear every credential and setting the plugin stored, while keeping the plugin installed. Deleting the plugin removes the same data. Neither touches your persona or its knowledge on PERSONAIZER.
 
 == Changelog ==
+
+= 1.2.3 =
+* Plugin updates now come from our GitHub releases page — the same place the plugin is downloaded from. Update notices in WordPress are unchanged; they are simply served from one place instead of two, so a released version can no longer be missing from the update check.
+* No changes to how your site or its products are synced.
 
 = 1.2.2 =
 * Product photos are now described by PERSONAIZER's image analysis, so customers can find a product by what it visibly is — its colour, its shape, or text printed on the packaging — even when none of that appears in the product's own text. The plugin used to send the product's name as the photo's description, and a photo that already had a description was left alone, so this analysis never ran for any product and the name was simply repeated back.

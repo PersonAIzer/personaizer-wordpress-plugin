@@ -45,7 +45,7 @@ those settings.
 ```
 personaizer/     the plugin itself — this folder's contents are exactly what ships in the zip
 build-zip.sh           packages personaizer/ into an installable zip (prod / --dev / --org builds)
-publish.sh              publishes a built zip + update manifest to the self-hosted update channel
+release.sh              cuts the GitHub release — the zip and the update manifest, as one release
 testing/                 kit for testing against a real public site + the WooCommerce sample catalog
 ```
 

@@ -65,7 +65,9 @@ CONST_VERSION="$(sed -n "s/^define( 'PERSONAIZER_VERSION', '\([^']*\)' );.*$/\1/
 echo "✓ version $VERSION agrees across header, PERSONAIZER_VERSION and readme Stable tag"
 
 # Where a PUBLISHED prod zip will live (the manifest advertises this URL). Dev builds don't get a manifest.
-DIST_BASE="${PERSONAIZER_DIST_BASE:-https://personaizerprodstore.blob.core.windows.net/platform-builds-public/wordpress}"
+# A release's assets are served from github.com, the same host the manifest permalink resolves against —
+# which is what satisfies the updater's same-host rule (Personaizer_Updater::trusted_package).
+DIST_BASE="${PERSONAIZER_DIST_BASE:-https://github.com/PersonAIzer/personaizer-wordpress-plugin/releases/download/v$VERSION}"
 
 # ── Guard: the SOURCE must default to PRODUCTION (both build modes) ────────────
 # Local/dev URLs belong in wp-config.php or a --dev build, never in the source. Comments may document
@@ -102,11 +104,11 @@ if [ "$ENV" = "dev" ]; then
         || { echo "error: dev rewrite of PERSONAIZER_API_URL failed — did the define change?" >&2; exit 1; }
     grep -q "define( 'PERSONAIZER_APP_URL', 'https://dev.personaizer.com' );" "$dp/$SLUG.php" \
         || { echo "error: dev rewrite of PERSONAIZER_APP_URL failed — did the define change?" >&2; exit 1; }
-    # The updater (self-hosted builds only) holds the update-manifest URL — rewrite its host too so a dev
-    # build follows the dev release line instead of polling the prod manifest.
-    [ -f "$dp/includes/class-personaizer-updater.php" ] \
-        && sed -i "s|personaizerprodstore.blob.core.windows.net|personaizerdevstore2.blob.core.windows.net|g" "$dp/includes/class-personaizer-updater.php"
-    echo "✓ dev build — rewrote API→dev-api.personaizer.com, dashboard→dev.personaizer.com, widget→dev blob"
+    # Drop the updater. There is one release line now (GitHub Releases), so a dev build that kept it
+    # would poll that line and offer the tester a PROD package — quietly replacing the dev URLs they
+    # installed it for. A hand-installed test artifact has no business auto-updating; rebuild instead.
+    rm -f "$dp/includes/class-personaizer-updater.php"
+    echo "✓ dev build — rewrote API→dev-api.personaizer.com, dashboard→dev.personaizer.com, widget→dev blob; updater removed"
 fi
 
 # ── ORG: strip the self-hosted updater ────────────────────────────────────────
@@ -267,7 +269,7 @@ PY
 
 # Print paths a Windows file picker will accept, when we're on Git Bash.
 echo ""
-echo "Publish BOTH to $DIST_BASE/ :"
+echo "Attach BOTH to the GitHub release (./release.sh does this):"
 if command -v cygpath >/dev/null 2>&1; then
     echo "  zip      $(cygpath -w "$ZIP_PATH")"
     echo "  manifest $(cygpath -w "$MANIFEST_PATH")"
@@ -276,5 +278,5 @@ else
     echo "  manifest $MANIFEST_PATH"
 fi
 echo ""
-echo "Upload the zip FIRST — the manifest advertises it, so publishing the manifest"
-echo "first would offer every site a download that 404s."
+echo "Both, or neither: the zip alone leaves every installed site polling the PREVIOUS"
+echo "release's manifest, so it is never offered this version and nothing reports an error."

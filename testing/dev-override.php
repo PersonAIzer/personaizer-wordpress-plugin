@@ -44,8 +44,9 @@ define( 'PERSONAIZER_APP_URL', 'https://dev.personaizer.com' );
 // deployed to dev; to test UNRELEASED chat.js changes, point this at local Core instead.
 define( 'PERSONAIZER_WIDGET_URL', 'https://personaizerdevstore2.blob.core.windows.net/platform-builds-public/chat.js' );
 
-// Optional — also exercise the self-hosted update channel against the dev manifest.
-define( 'PERSONAIZER_UPDATE_MANIFEST_URL', 'https://personaizerdevstore2.blob.core.windows.net/platform-builds-public/wordpress/personaizer.json' );
+// No update-channel override: there is one release line (GitHub Releases) and `--dev` builds ship without
+// the updater at all, so there is nothing here to point somewhere else. Set PERSONAIZER_UPDATE_MANIFEST_URL
+// only to test a PROD build against a manifest other than the latest release.
 
 /**
  * Test hosts often leave PHP's display_errors on (TasteWP does). A notice printed inside a REST or AJAX

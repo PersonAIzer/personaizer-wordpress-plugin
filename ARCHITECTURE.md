@@ -66,12 +66,24 @@ lane resumes.
   available" for every site that installed via the directory. Shipping a second, self-hosted updater
   alongside this is a wordpress.org rejection reason, so the `--org` build strips
   `class-personaizer-updater.php` entirely (see `build-zip.sh`).
-- **Self-hosted zip** (prod/`--dev` builds, this repo's own Releases + `publish.sh`): for anyone who
+- **Self-hosted zip** (prod builds, this repo's GitHub Releases via `release.sh`): for anyone who
   installs from a downloaded zip instead of the directory, `class-personaizer-updater.php` hooks into
   WordPress's own update-transient mechanism (`pre_set_site_transient_update_plugins` /
   `plugins_api`) so the native "update available" row, one-click Update, and background auto-updates all
-  work unchanged — polling a static JSON manifest on a CDN, not a live API endpoint (every install polls
-  it twice a day forever; a CDN is the right shape for that, an API endpoint is not).
+  work unchanged — polling a static JSON manifest, not a live API endpoint (every install polls it twice
+  a day forever; a static file is the right shape for that, an API endpoint is not).
+
+  That manifest is a release ASSET, reached through `/releases/latest/download/personaizer.json` — a
+  permalink that always resolves to the newest release. So the page clients download from and the file
+  installed sites poll are the same release, and cutting one is the entire publishing step. Before 1.2.3
+  both lived on our own blob container, which meant a release was only real once someone remembered to
+  run a second upload script; the two drifted, and a version published here but never uploaded there was
+  invisible to every installed site. The updater's same-host rule
+  (`Personaizer_Updater::trusted_package`) is satisfied because the manifest and the zip it advertises
+  are assets of the same release on github.com.
+
+  `--dev` builds ship WITHOUT the updater: there is one release line now, so a dev build that polled it
+  would offer the tester a prod package and quietly replace the dev URLs it was installed for.
 
 A given zip ships with exactly one of these active, decided at build time by `build-zip.sh`'s flag.
 
