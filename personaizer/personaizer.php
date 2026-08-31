@@ -3,7 +3,7 @@
  * Plugin Name: PERSONAIZER
  * Plugin URI:  https://personaizer.com/wordpress
  * Description: Add the PERSONAIZER AI chat widget to your WordPress site in one click. Enter your Persona ID and go live — no coding required.
- * Version:     1.2.0
+ * Version:     1.2.1
  * Requires at least: 5.6
  * Requires PHP: 7.4
  * Author:      PERSONAIZER
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * the header would be wasted work. build-zip.sh refuses to package when the constant, the header and
  * readme.txt's Stable tag disagree, so the copy cannot drift in silence.
  */
-define( 'PERSONAIZER_VERSION', '1.2.0' );
+define( 'PERSONAIZER_VERSION', '1.2.1' );
 define( 'PERSONAIZER_PLUGIN_FILE', __FILE__ );
 
 /**
@@ -239,11 +239,37 @@ function personaizer_pending_removals() {
     return is_array( $queue ) ? $queue : array();
 }
 
-/** Note that a post left a frozen lane, to be applied when that lane starts syncing again. */
+/** Note that a post is gone, to be applied by the next flush. */
 function personaizer_remember_removal( $lane, $external_id, $post_id ) {
     $queue = personaizer_pending_removals();
     $queue[ $lane ][ $external_id ] = (int) $post_id;
     update_option( 'personaizer_pending_removals', $queue, false );
+    personaizer_arm_removal_flush();
+}
+
+/**
+ * Apply this request's queued removals at the very end of it, once, under a time budget.
+ *
+ * Deleting inline from the trash hook is what this replaces, and the reason is bulk: one blocking API
+ * round-trip per post means trashing 200 products is 200 sequential requests inside a single WordPress
+ * request, which dies on max_execution_time part-way through. Every un-fired delete is then lost with no
+ * retry anywhere, and the AI keeps recommending products the shop no longer sells.
+ *
+ * Queuing first turns that into N cheap option writes plus a couple of batched calls at shutdown, and
+ * whatever the budget does not cover simply stays queued for the next cron tick. Shutdown runs after the
+ * response is sent, so a single deletion still reaches the AI within its own request without the owner
+ * waiting on it.
+ *
+ * Armed only from remember_removal(), so a request that deletes nothing pays nothing — not even the
+ * option read (the queue is stored with autoload off).
+ */
+function personaizer_arm_removal_flush() {
+    static $armed = false;
+    if ( $armed ) return;
+    $armed = true;
+    add_action( 'shutdown', function () {
+        personaizer_flush_removals( null, 5 );
+    }, 5 );
 }
 
 /**
@@ -254,38 +280,64 @@ function personaizer_remember_removal( $lane, $external_id, $post_id ) {
  * now. That check is what makes over-queuing harmless, which in turn lets the recording side stay dumb —
  * it can note anything that looks like a removal without having to be right.
  *
- * @param string[] $lanes Lane ids that just resumed.
+ * @param string[]|null $lanes Lane ids to apply, or null for every lane holding notes.
+ * @param float          $budget_seconds Stop after this long and leave the rest queued; 0 = no limit.
  * @return int Docs asked to be removed.
  */
-function personaizer_flush_removals( array $lanes ) {
+function personaizer_flush_removals( ?array $lanes = null, $budget_seconds = 0 ) {
     $queue = personaizer_pending_removals();
-    $ids   = array();
+    if ( $lanes === null ) $lanes = array_keys( $queue );
+
+    $started = microtime( true );
+    $removed = 0;
 
     foreach ( $lanes as $lane ) {
         if ( empty( $queue[ $lane ] ) ) continue;
+
+        $ids = array();
         foreach ( (array) $queue[ $lane ] as $external_id => $post_id ) {
             $post = get_post( (int) $post_id );
-            if ( $post && $post->post_status === 'publish' ) continue;   // it came back — the note is stale
+            if ( $post && $post->post_status === 'publish' ) {
+                unset( $queue[ $lane ][ $external_id ] );   // it came back — the note is stale
+                continue;
+            }
             $ids[] = (string) $external_id;
         }
-        unset( $queue[ $lane ] );
-    }
 
-    // The ids travel in the query string, so a long queue would build a URL past the ~8KB most servers
-    // accept and the whole flush would fail as a bad request.
-    foreach ( array_chunk( $ids, 100 ) as $chunk ) {
-        $result = personaizer_api()->delete_docs( $chunk );
-        if ( is_wp_error( $result ) ) {
-            // Keep the WHOLE queue rather than lose the notes we couldn't apply — the next resume retries.
-            // Re-deleting a doc that already went is a no-op, so replaying a partly-applied flush is safe.
-            personaizer_debug_log( 'pending removals flush failed: ' . $result->get_error_message() );
-            return 0;
+        // The ids travel in the query string, so a long queue would build a URL past the ~8KB most servers
+        // accept and the whole flush would fail as a bad request.
+        foreach ( array_chunk( $ids, 100 ) as $chunk ) {
+            $result = personaizer_api()->delete_docs( $chunk );
+            if ( is_wp_error( $result ) ) {
+                // Keep every note we could not apply — the next tick retries. Re-deleting a doc that
+                // already went is a no-op, so replaying a partly-applied flush is safe.
+                personaizer_debug_log( 'pending removals flush failed: ' . $result->get_error_message() );
+                update_option( 'personaizer_pending_removals', $queue, false );
+                return $removed;
+            }
+            foreach ( $chunk as $external_id ) unset( $queue[ $lane ][ $external_id ] );
+            $removed += count( $chunk );
+
+            // A catalog-sized queue must not take the request down with it — stopping mid-way is safe
+            // precisely because what is left is still recorded.
+            if ( $budget_seconds > 0 && ( microtime( true ) - $started ) >= $budget_seconds ) {
+                update_option( 'personaizer_pending_removals', $queue, false );
+                return $removed;
+            }
         }
+        if ( empty( $queue[ $lane ] ) ) unset( $queue[ $lane ] );
     }
 
     update_option( 'personaizer_pending_removals', $queue, false );
-    return count( $ids );
+    return $removed;
 }
+
+// Whatever a shutdown budget could not finish drains on the backfill tick — the same cron the catch-up
+// walk already rides, so a queue left by a bulk delete cannot sit forever waiting for another deletion
+// to arm a flush.
+add_action( Personaizer_Backfill::HOOK, function () {
+    if ( personaizer_api()->is_configured() ) personaizer_flush_removals( null, 10 );
+}, 5 );
 
 /**
  * Items the account's plan had no room for, waiting for space to free up.

@@ -141,14 +141,18 @@ class Personaizer_WooCommerce_Sync {
     public function on_post_removed( $post_id ) {
         if ( ! $this->api->is_configured() ) return;
         if ( get_post_type( $post_id ) !== 'product' ) return;
-        if ( ! $this->enabled() ) {
-            personaizer_remember_removal( 'products', $this->external_id( $post_id ), $post_id );   // see on_product_saved
-            return;
-        }
-        if ( ! function_exists( 'wc_get_product' ) ) return;
-        personaizer_forget_overflow( 'products', [ $this->external_id( $post_id ) ] );   // gone ⇒ not waiting
-        personaizer_forget_retry( 'products', [ $this->external_id( $post_id ) ] );
-        $this->api->delete_docs( [ $this->external_id( $post_id ) ] );
+
+        $external_id = $this->external_id( $post_id );
+        personaizer_forget_overflow( 'products', [ $external_id ] );   // gone ⇒ not waiting
+        personaizer_forget_retry( 'products', [ $external_id ] );
+
+        // Queue rather than delete inline, even when the lane is syncing — see personaizer_arm_removal_flush().
+        // An inline call is one blocking round-trip per product, so emptying a category of 200 is 200 of them
+        // in a single request; it dies on max_execution_time and every delete it never reached is lost with
+        // nothing to retry it. The flush this arms sends them batched, at shutdown, and keeps what it cannot
+        // finish. Deliberately not gated on enabled(): a doc pushed before the lane was switched off still
+        // exists, so a deletion while it sleeps must still be recorded.
+        personaizer_remember_removal( 'products', $external_id, $post_id );
     }
 
     /**

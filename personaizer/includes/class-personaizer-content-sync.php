@@ -99,12 +99,10 @@ class Personaizer_Content_Sync {
         if ( ! $this->api->is_configured() ) return;
         $post = get_post( $post_id );
         if ( ! $post ) return;
-        if ( ! in_array( $post->post_type, $this->enabled_types(), true ) ) {
-            $this->remember_removal( $post );   // frozen lane — see on_post_saved
-            return;
-        }
         $this->forget( $post );
-        $this->api->delete_docs( [ $this->external_id( $post ) ] );
+        // Always queued, never sent inline — see personaizer_arm_removal_flush() for why bulk deletes
+        // make a per-post API call unsafe. A frozen lane took this path already; now every removal does.
+        $this->remember_removal( $post );
     }
 
     /**
@@ -123,7 +121,7 @@ class Personaizer_Content_Sync {
     }
 
     /**
-     * Queue a removal for when this post's lane starts syncing again.
+     * Queue a removal to be applied by the next flush.
      *
      * Products are skipped deliberately: they are a lane, but they carry their own id shape
      * (wc-product-99, not wp-product-99) and their own hook, so Personaizer_WooCommerce_Sync queues them.

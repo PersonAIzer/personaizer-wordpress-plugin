@@ -4,7 +4,7 @@ Tags: ai chatbot, live chat, chat widget, woocommerce, customer support
 Requires at least: 5.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -136,6 +136,10 @@ In WordPress it stores only options: your Persona ID, your secret API key, your 
 Use **Disconnect** to clear every credential and setting the plugin stored, while keeping the plugin installed. Deleting the plugin removes the same data. Neither touches your persona or its knowledge on PERSONAIZER.
 
 == Changelog ==
+
+= 1.2.1 =
+* Deleting many products at once no longer leaves your AI recommending products you removed. Each deletion used to contact PERSONAIZER on the spot, so emptying a whole category meant hundreds of calls inside one page request — WordPress cut it short part-way, and every deletion it hadn't reached yet was lost with nothing to retry it. Deletions are now recorded first and sent together, so a bulk delete arrives complete, and anything a slow connection interrupts is retried instead of dropped.
+* Deleting a single product is unchanged — it still reaches your AI right away.
 
 = 1.2.0 =
 * Products now sync with every category they belong to, not just one. WooCommerce lets a product sit in several categories and doesn't say which is "the" one, so the plugin used to guess — and a product in two branches (say an LED driver that is both lighting and a power supply) lost one of them, along with that branch's filters. All of its categories are now sent as full paths, and PERSONAIZER decides how to group them.
