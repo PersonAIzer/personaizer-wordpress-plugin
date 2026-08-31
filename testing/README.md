@@ -19,7 +19,8 @@ So: test on a real public site. It doesn't need to cost anything.
 | File | Use |
 |------|-----|
 | `woocommerce-sample-products.csv` | The **official WooCommerce sample catalog** (~20 products — hoodies, tees, beanies, cap, sunglasses, belt; two variable products with colour/size variations; plus grouped/external/downloadable types). Realistic coverage, all images have proper `.jpg` URLs. (Same file WooCommerce ships at `wp-content/plugins/woocommerce/sample-data/`.) |
-| `dev-override.php` | **Ready-to-use** mu-plugin, pre-filled for **dev**. Copy it into the test site's `wp-content/mu-plugins/` and the plugin talks to dev. |
+| `dev-override.php` | **Ready-to-use** override, pre-filled for **dev**. Drop it into the test site's `wp-content/mu-plugins/`, or — on a host where you cannot reach the filesystem — install it as an ordinary plugin (next row). |
+| `build-dev-override-zip.sh` | Wraps that same file into an installable plugin zip (`dist/personaizer-dev-override.zip`) for hosts with no file access, such as a TasteWP **temp** site. |
 | `.gitignore` | Only ignores built zips (artifacts) — see below. |
 
 The plugin **zip is not committed on purpose**: build it fresh with `build-zip.sh` each time. A
@@ -56,9 +57,21 @@ version guards exist to prevent.
    Both write to the gitignored `dist/` — a consistent spot, never committed (a stale
    committed zip is how you end up testing the wrong version).
 
-5. **(Only for option B) Point it at dev**: put `dev-override.php` into the site's `wp-content/mu-plugins/`
-   (create the folder — the file must sit *directly* in it). On TasteWP, install the free **WP File
-   Manager** plugin and upload the file through it. It's already filled in for dev — no editing needed.
+5. **(Only for option B) Point it at dev** with `dev-override.php`. It's already filled in for dev — no
+   editing needed. Two routes:
+
+   **mu-plugin (preferred)** — put it into the site's `wp-content/mu-plugins/` (create the folder; the
+   file must sit *directly* in it, not in a sub-folder). On TasteWP this needs the free **WP File
+   Manager** plugin.
+
+   **Ordinary plugin** — when the host gives you no filesystem at all. A TasteWP *temp* (free) site has
+   no dashboard file manager and no SFTP, so the route above is unavailable there.
+   ```bash
+   testing/build-dev-override-zip.sh   # → dist/personaizer-dev-override.zip
+   ```
+   Upload it and **activate it BEFORE the PERSONAIZER plugin**. This works only because the plugin
+   declares every constant behind `if(!defined())` AND WordPress includes active plugins in *activation*
+   order — activate it second and it is a silent no-op. (Alphabetical order is not what decides this.)
    - Verify: **PERSONAIZER → System info → API base** should read `https://dev-api.personaizer.com`.
    - Skip options B/5 entirely when testing against **prod** (once prod is deployed): the plugin defaults
      to prod, so no override or dev build is needed.
