@@ -456,7 +456,18 @@ class Personaizer_WooCommerce_Sync {
         return $facets;
     }
 
-    /** Featured image (primary) + gallery images, capped. Absolute URLs only. */
+    /**
+     * Featured image (primary) + gallery images, capped. Absolute URLs only.
+     *
+     * Descriptions are sent EMPTY on purpose. PERSONAIZER runs vision analysis on the primary
+     * image only when it arrives without a description, and folds the resulting caption (subject,
+     * colours, transcribed text) into what the product is searched on. Sending the product name
+     * here — which this used to do — suppressed that analysis for every product, and put the name
+     * into the embedded text a second time, since the title is already there.
+     *
+     * `source` is `client`: we are declaring these URLs, not having them scraped out of the
+     * content. The backend treats declared entries as authoritative over auto-detected ones.
+     */
     private function images( WC_Product $product ) {
         $images = array();
         $seen   = array();
@@ -465,7 +476,7 @@ class Personaizer_WooCommerce_Sync {
         if ( $primary_id ) {
             $url = wp_get_attachment_image_url( $primary_id, 'full' );
             if ( $url ) {
-                $images[]     = array( 'url' => $url, 'description' => $product->get_name(), 'is_primary' => true );
+                $images[]     = array( 'url' => $url, 'description' => '', 'is_primary' => true, 'source' => 'client' );
                 $seen[ $url ] = true;
             }
         }
@@ -474,7 +485,7 @@ class Personaizer_WooCommerce_Sync {
             $url = wp_get_attachment_image_url( $gid, 'full' );
             if ( $url && ! isset( $seen[ $url ] ) ) {
                 $seen[ $url ] = true;
-                $images[]     = array( 'url' => $url, 'description' => '', 'is_primary' => false );
+                $images[]     = array( 'url' => $url, 'description' => '', 'is_primary' => false, 'source' => 'client' );
             }
         }
         return $images;

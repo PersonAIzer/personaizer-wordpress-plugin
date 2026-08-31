@@ -3,7 +3,7 @@
  * Plugin Name: PERSONAIZER
  * Plugin URI:  https://personaizer.com/wordpress
  * Description: Add the PERSONAIZER AI chat widget to your WordPress site in one click. Enter your Persona ID and go live — no coding required.
- * Version:     1.2.1
+ * Version:     1.2.2
  * Requires at least: 5.6
  * Requires PHP: 7.4
  * Author:      PERSONAIZER
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * the header would be wasted work. build-zip.sh refuses to package when the constant, the header and
  * readme.txt's Stable tag disagree, so the copy cannot drift in silence.
  */
-define( 'PERSONAIZER_VERSION', '1.2.1' );
+define( 'PERSONAIZER_VERSION', '1.2.2' );
 define( 'PERSONAIZER_PLUGIN_FILE', __FILE__ );
 
 /**
